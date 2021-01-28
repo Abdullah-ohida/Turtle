@@ -1,121 +1,141 @@
 package turtle;
 
 public class Turtle {
-
     private Pen pen;
-    private CurrentDirection currentDirection;
-    private int xCoordinate;
-    private int yCoordinate;
-    private String[][] sketchPad = new String[20][20];
+    private Direction currentDirection;
+    private SketchPadPosition currentSketchPadPosition;
 
-    public Turtle(Pen pen) {
-        this.pen = pen;
-        this.xCoordinate = 0;
-        this.yCoordinate = 0;
-        this.currentDirection = CurrentDirection.EAST;
-    }
 
-    public String[][] getSketchPad() {
-        return sketchPad;
-    }
-
-    public int getXCoordinate() {
-        return xCoordinate;
-    }
-
-    public void setXCoordinate(int xCoordinate) {
-        this.xCoordinate = xCoordinate;
-    }
-
-    public int getYCoordinate() {
-        return yCoordinate;
-    }
-
-    public void setYCoordinate(int yCoordinate) {
-        this.yCoordinate = yCoordinate;
+    public Turtle(Pen pen){
+        this.currentSketchPadPosition = new SketchPadPosition(0, 0);
+        this.currentDirection = Direction.EAST;
+        this.pen = new Pen();
     }
 
     public Pen getPen() {
         return pen;
     }
 
-    public CurrentDirection getCurrentDirection() {
+    public Direction getCurrentDirection() {
         return currentDirection;
     }
 
-    public void setCurrentDirection(CurrentDirection currentDirection) {
+    public void setCurrentDirection(Direction currentDirection) {
         this.currentDirection = currentDirection;
     }
 
-    public void turnRight() {
-        switch (currentDirection) {
-            case EAST -> setCurrentDirection(CurrentDirection.SOUTH);
-            case SOUTH -> setCurrentDirection(CurrentDirection.WEST);
-            case WEST -> setCurrentDirection(CurrentDirection.NORTH);
-            case NORTH -> setCurrentDirection(CurrentDirection.EAST);
+    public void setCurrentSketchPadPosition(SketchPadPosition currentSketchPadPosition) {
+        this.currentSketchPadPosition = currentSketchPadPosition;
+    }
+
+    public SketchPadPosition getCurrentSketchPadPosition() {
+        return currentSketchPadPosition;
+    }
+
+    public void turnRight(){
+        switch (currentDirection){
+            case EAST -> setCurrentDirection(Direction.SOUTH);
+            case SOUTH -> setCurrentDirection(Direction.WEST);
+            case WEST -> setCurrentDirection(Direction.NORTH);
+            case NORTH -> setCurrentDirection(Direction.EAST);
         }
     }
 
-    public void turnLeft() {
-        switch (currentDirection) {
-            case EAST -> setCurrentDirection(CurrentDirection.NORTH);
-            case SOUTH -> setCurrentDirection(CurrentDirection.EAST);
-            case WEST -> setCurrentDirection(CurrentDirection.SOUTH);
-            case NORTH -> setCurrentDirection(CurrentDirection.WEST);
+    public void turnLeft(){
+        switch (currentDirection){
+            case EAST -> setCurrentDirection(Direction.NORTH);
+            case SOUTH -> setCurrentDirection(Direction.EAST);
+            case WEST -> setCurrentDirection(Direction.SOUTH);
+            case NORTH -> setCurrentDirection(Direction.WEST);
         }
     }
 
-    public void moveForward(int moves) {
-        switch (currentDirection) {
-            case EAST -> {
-                    for (int column = 0; column < this.sketchPad[getXCoordinate()].length; column++) {
-                        if (checkStopPosition(column, moves)) {
-                            break;
-                        }
-                        setYCoordinate(moves);
-                    }
-            }
-            case WEST -> {
-                int columnPosition = getYCoordinate();
-                int newPosition = (columnPosition - moves);
+    public void move(SketchPad sketchBoard, int numberOfSteps){
+        numberOfSteps -= 1;
+        int[][] floor = sketchBoard.getSketchBoard();
 
-                    for (int column = columnPosition; column <= this.sketchPad[getXCoordinate()].length; column--) {
-                        if(checkStopPosition(column, newPosition)){
-                            setYCoordinate(newPosition);
-                            break;
-                        }
-                    }
-            }
-
-            case SOUTH -> {
-                int rowPosition = getXCoordinate();
-               for (int row = rowPosition; row < sketchPad.length; row++){
-                   if(checkStopPosition(row, moves)){
-                       setXCoordinate(moves);
-                       break;
-                   }
-               }
-           }
-            case NORTH -> {
-                int rowPosition = getXCoordinate();
-                int newPosition = getXCoordinate() - moves;
-                for (int row = rowPosition; row < sketchPad.length; row--){
-                    if(checkStopPosition(row, newPosition)){
-                        setXCoordinate(newPosition);
-                        break;
-                    }
-                }
-
-            }
-
+        if(getPen().getPenPosition() == Position.PEN_UP){
+           movePenOnSketchPad(numberOfSteps);
+        }
+        if(getPen().getPenPosition() == Position.PEN_DOWN){
+            drawOnSketchPad(floor, numberOfSteps);
         }
     }
 
-    private boolean checkStopPosition(int row, int stopPoint){
-        return  row == stopPoint;
+
+    private void movePenOnSketchPad(int numberOfSteps){
+        int currentRow = getCurrentSketchPadPosition().getRowPosition();
+        int currentColumn = getCurrentSketchPadPosition().getColumnPosition();
+        SketchPadPosition currentSketchPadPosition = getCurrentSketchPadPosition();
+        switch (currentDirection){
+            case EAST -> { currentSketchPadPosition.setColumnPosition(currentColumn + numberOfSteps); }
+            case SOUTH -> {currentSketchPadPosition.setRowPosition(currentRow + numberOfSteps);}
+            case WEST -> {currentSketchPadPosition.setColumnPosition(currentColumn - numberOfSteps);}
+            case NORTH -> {currentSketchPadPosition.setRowPosition(currentRow - numberOfSteps);}
+        }
     }
+
+    private void drawOnSketchPad(int[][] floor, int numberOfSteps){
+        int currentRow = currentSketchPadPosition.getRowPosition();
+        int currentColumn = currentSketchPadPosition.getColumnPosition();
+
+        switch (currentDirection){
+            case EAST -> { DisplayOnColumn(floor, numberOfSteps, currentColumn + numberOfSteps); }
+            case SOUTH -> { DisplayOnRow(floor, numberOfSteps, currentRow + numberOfSteps); }
+            case WEST -> { DisplayOnColumn(floor, numberOfSteps, currentColumn - numberOfSteps); }
+            case NORTH -> { DisplayOnRow(floor, numberOfSteps, currentRow - numberOfSteps); }
+        }
+    }
+
+    private void DisplayOnRow(int[][] floor, int numberOfSteps, int newPosition) {
+        drawInVerticalDirection(numberOfSteps, floor, currentDirection);
+        currentSketchPadPosition.setRowPosition(newPosition);
+    }
+
+    private void DisplayOnColumn(int[][] floor, int numberOfSteps, int newPosition) {
+        drawInHorizontalDirection(numberOfSteps, floor, currentDirection);
+        currentSketchPadPosition.setColumnPosition(newPosition);
+    }
+
+    private void drawInHorizontalDirection(int numberOfSteps, int[][] floor, Direction currentDirection) {
+        int currentRow = currentSketchPadPosition.getRowPosition();
+        int currentColumn = currentSketchPadPosition.getColumnPosition();
+        int startingPoint = currentSketchPadPosition.getColumnPosition();
+
+
+        if(currentDirection == Direction.EAST){
+            while (startingPoint <= numberOfSteps) {
+                floor[currentRow][startingPoint] = 1;
+                startingPoint++;
+            }
+        }else {
+            int newPenPosition = currentColumn - numberOfSteps;
+            while (startingPoint >= newPenPosition) {
+                floor[currentRow][startingPoint] = 1;
+                startingPoint--;
+            }
+        }
+
+    }
+
+    private void drawInVerticalDirection(int numberOfSteps, int[][] floor, Direction currentDirection){
+        int currentColumn = currentSketchPadPosition.getColumnPosition();
+        int currentRow = currentSketchPadPosition.getRowPosition();
+        int startingPoint = currentSketchPadPosition.getRowPosition();
+
+        if(currentDirection == Direction.SOUTH){
+            while (startingPoint <= numberOfSteps){
+                floor[startingPoint][currentColumn] = 1;
+                startingPoint++;
+            }
+        }else {
+            int newPenPosition = currentRow - numberOfSteps;
+            while (startingPoint >= newPenPosition){
+                floor[startingPoint][currentColumn] = 1;
+                startingPoint--;
+            }
+        }
+    }
+
 
 }
-
-
-

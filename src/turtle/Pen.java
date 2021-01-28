@@ -1,14 +1,18 @@
 package turtle;
 
 public class Pen {
-    private PenOrientation penOrientation;
+    private Position penPosition;
 
-
-    public void setPenOrientation(PenOrientation penOrientation) {
-        this.penOrientation = penOrientation;
+    public Pen() {
+        this.penPosition = Position.PEN_UP;
     }
 
-    public PenOrientation getPenOrientation() {
-        return penOrientation;
+    public Position getPenPosition() {
+        return penPosition;
     }
+
+    public void setPenPosition(Position penPosition) {
+        this.penPosition = penPosition;
+    }
+
 }
