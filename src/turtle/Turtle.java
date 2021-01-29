@@ -56,10 +56,8 @@ public class Turtle {
 
         if(getPen().getPenPosition() == Position.PEN_UP){
            movePenOnSketchPad(numberOfSteps);
-        }
-        if(getPen().getPenPosition() == Position.PEN_DOWN){
+        }else
             drawOnSketchPad(floor, numberOfSteps);
-        }
     }
 
 
