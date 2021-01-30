@@ -1,5 +1,6 @@
 package turtle;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ class TurtleTest {
         sketchBoard = new SketchPad(20, 20);
     }
 
-//    @AfterEach
+    @AfterEach
     void tearDown() {
         turtle = null;
     }

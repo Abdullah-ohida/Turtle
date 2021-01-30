@@ -9,7 +9,7 @@ public class Turtle {
     public Turtle(Pen pen){
         this.currentSketchPadPosition = new SketchPadPosition(0, 0);
         this.currentDirection = Direction.EAST;
-        this.pen = new Pen();
+        this.pen = pen;
     }
 
     public Pen getPen() {
@@ -66,10 +66,10 @@ public class Turtle {
         int currentColumn = getCurrentSketchPadPosition().getColumnPosition();
         SketchPadPosition currentSketchPadPosition = getCurrentSketchPadPosition();
         switch (currentDirection){
-            case EAST -> { currentSketchPadPosition.setColumnPosition(currentColumn + numberOfSteps); }
-            case SOUTH -> {currentSketchPadPosition.setRowPosition(currentRow + numberOfSteps);}
-            case WEST -> {currentSketchPadPosition.setColumnPosition(currentColumn - numberOfSteps);}
-            case NORTH -> {currentSketchPadPosition.setRowPosition(currentRow - numberOfSteps);}
+            case EAST -> currentSketchPadPosition.setColumnPosition(currentColumn + numberOfSteps);
+            case SOUTH -> currentSketchPadPosition.setRowPosition(currentRow + numberOfSteps);
+            case WEST -> currentSketchPadPosition.setColumnPosition(currentColumn - numberOfSteps);
+            case NORTH -> currentSketchPadPosition.setRowPosition(currentRow - numberOfSteps);
         }
     }
 
@@ -78,10 +78,10 @@ public class Turtle {
         int currentColumn = currentSketchPadPosition.getColumnPosition();
 
         switch (currentDirection){
-            case EAST -> { DisplayOnColumn(floor, numberOfSteps, currentColumn + numberOfSteps); }
-            case SOUTH -> { DisplayOnRow(floor, numberOfSteps, currentRow + numberOfSteps); }
-            case WEST -> { DisplayOnColumn(floor, numberOfSteps, currentColumn - numberOfSteps); }
-            case NORTH -> { DisplayOnRow(floor, numberOfSteps, currentRow - numberOfSteps); }
+            case EAST -> DisplayOnColumn(floor, numberOfSteps, currentColumn + numberOfSteps);
+            case SOUTH -> DisplayOnRow(floor, numberOfSteps, currentRow + numberOfSteps);
+            case WEST -> DisplayOnColumn(floor, numberOfSteps, currentColumn - numberOfSteps);
+            case NORTH -> DisplayOnRow(floor, numberOfSteps, currentRow - numberOfSteps);
         }
     }
 
@@ -102,7 +102,7 @@ public class Turtle {
 
 
         if(currentDirection == Direction.EAST){
-            while (startingPoint <= numberOfSteps) {
+            while (newPosition(numberOfSteps, startingPoint)) {
                 floor[currentRow][startingPoint] = 1;
                 startingPoint++;
             }
@@ -122,7 +122,7 @@ public class Turtle {
         int startingPoint = currentSketchPadPosition.getRowPosition();
 
         if(currentDirection == Direction.SOUTH){
-            while (startingPoint <= numberOfSteps){
+            while (newPosition(numberOfSteps, startingPoint)){
                 floor[startingPoint][currentColumn] = 1;
                 startingPoint++;
             }
@@ -133,6 +133,10 @@ public class Turtle {
                 startingPoint--;
             }
         }
+    }
+
+    private boolean newPosition(int numberOfSteps, int startingPoint) {
+        return startingPoint <= numberOfSteps;
     }
 
 
